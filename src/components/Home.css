@@ -1,0 +1,16 @@
+/* Home.css */
+.yes {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+  }
+  
+  .pokemon-info {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    background-color: white;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }

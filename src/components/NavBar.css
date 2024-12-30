@@ -1,0 +1,33 @@
+/* NavBar.css */
+.navbar {
+    background-color: #63b5fc;
+    overflow: hidden;
+  }
+  
+  .navbar-container {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .nav-menu {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+  }
+  
+  .nav-item {
+    padding: 14px 20px;
+  }
+  
+  .nav-links {
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .nav-links:hover {
+    background-color: #ddd;
+    color: black;
+  }

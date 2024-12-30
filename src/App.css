@@ -36,3 +36,32 @@
     transform: rotate(360deg);
   }
 }
+
+h1{
+  color: #f96328;
+}
+/* #283df9 */
+
+p{
+  color: #f96328;
+}
+
+label{
+  color: #f96328;
+}
+
+button{
+  background-color: #f96328;
+  color: white;
+  padding: 5px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.App { /* does not work */
+  background: linear-gradient(to right, #00cecb, #511eeb);
+  font-family: 'Arial';
+  /* animation: gradient 5s linear infinite; */
+  background-size: 120% 120%;
+}
