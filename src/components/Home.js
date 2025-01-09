@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Home.css';
 
+// Main problem: scrolling doesn't work (Fixed with adjusted bounding box dimensions)
+
 function Home() {
   const [random, setRandom] = useState(Math.floor(Math.random() * 1025) + 1);
   const [specificPokemonImage, setSpecificPokemonImage] = useState(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${random}.png`);
@@ -18,16 +20,17 @@ function Home() {
 
   // Define the bounding box dimensions
   const boundingBox = {
-    top: 100, // Top offset
-    left: 100, // Left offset
-    width: window.innerWidth - 200, // Width of the bounding box
-    height: window.innerHeight - 200 // Height of the bounding box
+    top: 120, // Top offset
+    left: 50, // Left offset
+    width: window.innerWidth - 180, // Width of the bounding box
+    height: window.innerHeight - 290 // Height of the bounding box
   };
 
   useEffect(() => { 
     if (intervalId) {
       const interval = setInterval(() => {
         const newRandom = Math.floor(Math.random() * 1025) + 1;
+        // const newRandom = 131;
         const newImage = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${newRandom}.png`;
         const newCry = `/cries-main/cries/pokemon/latest/${newRandom}.ogg`;
         setRandom(newRandom);
@@ -64,9 +67,18 @@ function Home() {
               kaboomClone.play().catch((error) => console.error('Error playing kaboom audio:', error));
             }
             clearInterval(moveInterval);
-            setPokemonImages((images) => images.filter((img) => img.id !== newImageObj.id));
+
+            // Change the image to explosion.gif
+            if (pokemonRef) {
+              pokemonRef.src = '/explosion.gif';
+            }
+
+            // Remove the Pokémon image after showing the explosion.gif for a split second
+            setTimeout(() => {
+              setPokemonImages((images) => images.filter((img) => img.id !== newImageObj.id));
+            }, 600); // Show explosion.gif for 600ms
           }
-        }, Math.random() * 3000 + 2000);
+        }, Math.random() * 2000 + 1000);
 
         // Attach the interval to the Pokémon object
         newImageObj.moveInterval = moveInterval;
@@ -176,3 +188,10 @@ function Home() {
 }
 
 export default Home;
+
+
+// ANOTHER IDEA: MAKE A BATTLE ROYALE OF THE 1025 POKEMON AND LET THEM FIGHT TILL ONLY ONE REMAINS
+// IDEA: MAKE A LEADERBOARD GIVEN PREDICTION OF WHO WILL WIN (POSITIONS 1 to 1025)
+// LIVE UPDATE LEADERBOARD
+
+// ADD A FIELD FOR NUMBER OF PLAYERS AND THEIR CHOICES AFTERWARDS

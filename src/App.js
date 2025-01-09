@@ -1,16 +1,21 @@
-import logo from './logo.svg';
 import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Home from './components/Home';
 import NavBar from './components/NavBar';
+import Something from './components/Something';
 
 function App() {
   return (
-    <div className="App">
-      <NavBar />
-      <h1>Yippee :D</h1>
-      <Home />
-    </div>
+    <Router>
+      <div className="App">
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/something" element={<Something />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

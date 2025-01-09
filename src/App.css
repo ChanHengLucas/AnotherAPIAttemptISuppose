@@ -1,5 +1,12 @@
 .App {
   text-align: center;
+  background: linear-gradient(to right, #00cecb, #511eeb);
+  font-family: 'Arial';
+  background-size: 200% 200%;
+  height: 100vh; /* Ensure the App takes up the full viewport height */
+  margin: 0; /* Remove any default margin */
+  padding: 0; /* Remove any default padding */
+  overflow: hidden; /* Prevent overflow issues */
 }
 
 .App-logo {
@@ -37,31 +44,27 @@
   }
 }
 
-h1{
+h1 {
   color: #f96328;
-}
-/* #283df9 */
-
-p{
-  color: #f96328;
+  font-family: 'Comic Sans MS';
 }
 
-label{
+p {
   color: #f96328;
+  font-family: 'Comic Sans MS';
 }
 
-button{
+label {
+  color: #f96328;
+  font-family: 'Comic Sans MS';
+}
+
+button {
   background-color: #f96328;
+  font-family: 'Comic Sans MS';
   color: white;
   padding: 5px 15px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
-
-.App { /* does not work */
-  background: linear-gradient(to right, #00cecb, #511eeb);
-  font-family: 'Arial';
-  /* animation: gradient 5s linear infinite; */
-  background-size: 120% 120%;
 }
