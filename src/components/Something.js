@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 function Something() {
+  // ------------------------------------------------------
+  // States & Refs (unchanged)
+  // ------------------------------------------------------
   const [pokemonImages, setPokemonImages] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
   const [allPokemonDead, setAllPokemonDead] = useState(false);
@@ -18,9 +21,13 @@ function Something() {
   const EXPLOSION_CHANCE = 0.1;
   const MIN_DELAY = 1000;
   const MAX_DELAY = 3000;
-  const numberOfPokemon = 1026; // 1025 Pokémon
+  const numberOfPokemon = 1026;
 
-  // Bounding box values
+  // ------------------------------------------------------
+  // Double-Layer Bounding Box
+  // Outer: fixed display size (scrollable)
+  // Inner: large "roam area" for Pokémon
+  // ------------------------------------------------------
   const VISIBLE_BOX_WIDTH = 1400;
   const VISIBLE_BOX_HEIGHT = 600;
   const ACTUAL_ROAM_WIDTH = 1350;
@@ -33,16 +40,20 @@ function Something() {
     height: ACTUAL_ROAM_HEIGHT,
   };
 
-  // Player inputs
+  // ------------------------------------------------------
+  // Player input states (unchanged)
+  // ------------------------------------------------------
   const [numberOfPlayers, setNumberOfPlayers] = useState(1);
   const [playerNames, setPlayerNames] = useState([""]);
   const [filterTexts, setFilterTexts] = useState([""]);
   const [playerSelections, setPlayerSelections] = useState([""]);
 
-  // Use effect to fetch all Pokémon
+  // ------------------------------------------------------
+  // useEffect: On Mount - Fetch Pokémon
+  // ------------------------------------------------------
   useEffect(() => {
     (async function fetchAllPokemon() {
-      console.log("[fetchAllPokemon] Creating all 1025 Pokémon...");
+      console.log("[fetchAllPokemon] Creating all 1026 Pokémon...");
       const initial = [];
       for (let i = 1; i <= numberOfPokemon; i++) {
         try {
@@ -67,7 +78,9 @@ function Something() {
     })();
   }, []);
 
-  // Use effect to schedule movement for each Pokémon
+  // ------------------------------------------------------
+  // useEffect: isRunning
+  // ------------------------------------------------------
   useEffect(() => {
     if (isRunning) {
       startTime.current = Date.now();
@@ -83,7 +96,9 @@ function Something() {
     }
   }, [isRunning]);
 
-  // Movement and explosion logic
+  // ------------------------------------------------------
+  // Movement & Explosion Logic
+  // ------------------------------------------------------
   const scheduleNextMove = (id) => {
     if (!isRunning) return;
     const delay = Math.random() * (MAX_DELAY - MIN_DELAY) + MIN_DELAY;
@@ -111,7 +126,7 @@ function Something() {
           });
         }
 
-        // Mark as exploding => show gif
+        // Mark as exploding => show .gif
         updated[idx] = { ...poke, isExploding: true };
 
         // Clear timer
@@ -127,7 +142,7 @@ function Something() {
           });
         }, 600);
 
-        // Add to global leaderboard
+        // Add to global LB
         const timeSurvived = ((Date.now() - startTime.current) / 1000).toFixed(2);
         setLeaderboard((prevLB) => {
           const newLB = [...prevLB, { name: poke.name, time: timeSurvived }];
@@ -151,8 +166,10 @@ function Something() {
     });
   };
 
-  // Player inputs
-  const handleNumberOfPlayersChange = (e) => { // Number of players => Objects with player array values
+  // ------------------------------------------------------
+  // Player Input Handlers
+  // ------------------------------------------------------
+  const handleNumberOfPlayersChange = (e) => {
     const num = Number(e.target.value);
     setNumberOfPlayers(num);
     setPlayerNames(Array(num).fill(""));
@@ -160,7 +177,7 @@ function Something() {
     setPlayerSelections(Array(num).fill(""));
   };
 
-  const handlePlayerNameChange = (index, value) => { // Player names
+  const handlePlayerNameChange = (index, value) => {
     setPlayerNames((prev) => {
       const arr = [...prev];
       arr[index] = value;
@@ -168,7 +185,7 @@ function Something() {
     });
   };
 
-  const handleFilterTextChange = (index, value) => { // Filter texts
+  const handleFilterTextChange = (index, value) => {
     setFilterTexts((prev) => {
       const arr = [...prev];
       arr[index] = value;
@@ -176,7 +193,7 @@ function Something() {
     });
   };
 
-  const handlePlayerSelection = (index, value) => { // Player selections
+  const handlePlayerSelection = (index, value) => {
     setPlayerSelections((prev) => {
       const arr = [...prev];
       arr[index] = value;
@@ -184,7 +201,9 @@ function Something() {
     });
   };
 
-  // Buttons
+  // ------------------------------------------------------
+  // Buttons & Game Control
+  // ------------------------------------------------------
   const handleStart = () => {
     setIsRunning(true);
   };
@@ -226,11 +245,20 @@ function Something() {
     setPokemonImages(initial);
   };
 
-    // Player leaderboard
+    /**
+   * ==========================
+   *   Player Leaderboard
+   * ==========================
+   * Format each entry as:
+   *    [Player rank]) [Player name]: [Pokemon name] (Position: [Pokemon rank])
+   * Sorted by how long they've survived => if not exploded => infinite survival => top rank.
+   */
     function computePlayerLeaderboard() {
+      // Build array of { playerName, chosenPokemon, survivalTime, mainLBPos }
       const results = playerSelections.map((chosenName, i) => {
         const pName = playerNames[i] || `Player ${i + 1}`;
         if (!chosenName) {
+          // no Pokémon selected => treat survival as -1
           return {
             playerIndex: i,
             playerName: pName,
@@ -239,19 +267,19 @@ function Something() {
             mainLBPosition: null,
           };
         }
-        // Find in the main LB
+        // find in the main LB
         const lbEntry = leaderboard.find((entry) => entry.name === chosenName);
         if (!lbEntry) {
-          // Not exploded yet => treat as still alive (inf time)
+          // not exploded => still alive => treat as infinite survival
           return {
             playerIndex: i,
             playerName: pName,
             pokemonName: chosenName,
             survivalTime: Number.POSITIVE_INFINITY,
-            mainLBPosition: "??", // Not exploded yet => rank unknown
+            mainLBPosition: "??", // not exploded => rank unknown
           };
         }
-        // Exploded, return time and leaderboard position
+        // exploded => parse time
         return {
           playerIndex: i,
           playerName: pName,
@@ -261,10 +289,10 @@ function Something() {
         };
       });
   
-      // Sort by survivalTime => the longer the better
+      // Sort by survivalTime desc => bigger is better
       results.sort((a, b) => b.survivalTime - a.survivalTime);
   
-      // Assigning rank among players
+      // Now assign rank among players
       return results.map((item, idx) => {
         return {
           ...item,
@@ -286,13 +314,14 @@ function Something() {
         } = player;
   
         if (pokemonName === "") {
+          // no Pokémon => display something else
           return (
             <div key={player.playerIndex} style={{ marginBottom: "4px" }}>
               {playerRank}) {playerName}: No Pokémon chosen
             </div>
           );
         }
-        // If mainLBPosition is "??", it means the Pokémon has not exploded yet => no rank
+        // If mainLBPosition is "??", it means not exploded => no rank
         const rankPart = mainLBPosition === null ? "??" : mainLBPosition;
         return (
           <div key={player.playerIndex} style={{ marginBottom: "4px" }}>
@@ -302,12 +331,14 @@ function Something() {
       });
     }
   
-  // Rendering for the main page
+  // ------------------------------------------------------
+  // Render
+  // ------------------------------------------------------
   return (
     <div
       className="App"
       style={{
-        minHeight: "100vh",
+        minHeight: "100vh", // Ensure it takes the full viewport height
         padding: "20px",
         overflowY: 'scroll',
       }}
@@ -440,7 +471,7 @@ function Something() {
             flexWrap: "wrap",
           }}
         >
-          {/* Main Leaderboard */}
+          {/* Main LB */}
           <div
             style={{
               flex: "1 1 300px",
@@ -477,7 +508,7 @@ function Something() {
             )}
           </div>
 
-          {/* Player Leaderboard */}
+          {/* Player LB */}
           <div
             style={{
               flex: "1 1 300px",
@@ -492,7 +523,10 @@ function Something() {
         </div>
       )}
 
-      {/* Bounding Box */}
+      {/* 
+        Outer bounding box (800×800) => scrollable container
+        Inner "roam area" => 2000×2000 => absolute positioning for Pokémon
+      */}
       <div
         style={{
           position: "relative",
